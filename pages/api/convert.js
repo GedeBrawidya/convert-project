@@ -8,7 +8,7 @@ export const config = {
         bodyParser : false },    
     };
 
-const tmp_dir = path.join(process,cwd(), 'tmp');
+const tmp_dir = path.join(process.cwd(), 'tmp');
 if (!fs.existsSync(tmp_dir)) fs.mkdirSync(tmp_dir);
 
 function convertFile (inputPath, outputFormat) {
@@ -21,13 +21,13 @@ function convertFile (inputPath, outputFormat) {
             tmp_dir,
             inputPath,
         ];
-        const process = spawn('/usr/bin/libreoffice', args);
+        const converter = spawn('soffice.exe', args);
 
-        process.on("close", (code) => {
+        converter.on("close", (code) => {
             if (code === 0) {
                 const outputFile = path.join(
                     tmp_dir, path.basename(
-                        inputPath, path.extname(inputPath)) + "," + outputFormat
+                        inputPath, path.extname(inputPath)) + "." + outputFormat
                     );
                     resolve (outputFile);                    
                 }else  {
@@ -38,7 +38,7 @@ function convertFile (inputPath, outputFormat) {
 }
 
 export default async function handler (req, res) {
-    if (req.method !== 'POSR')
+    if (req.method !== 'POST')
         return res.status(405).json({ error: 'Method not allowed'});
     const form = formidable({ multiples: false, uploadDir: tmp_dir, keepExtensions: true });
 
@@ -52,7 +52,7 @@ export default async function handler (req, res) {
             res.setHeader("Content-Type", "application/octet-stream");
             res.setHeader(
                 "content-Disposition",
-                'attachment; filename=" + path.basename(converted)}"');
+                `attachment; filename=" + path.basename(converted)}"`);
             res.send(data);
         } catch (e) {
             res.status(500).json({ error: e.message});
