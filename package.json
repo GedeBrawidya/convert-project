@@ -9,8 +9,11 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "child_process": "^1.0.2",
     "formidable": "^3.5.4",
+    "fs": "^0.0.1-security",
     "next": "16.0.3",
+    "path": "^0.12.7",
     "react": "19.2.0",
     "react-dom": "19.2.0"
   },
