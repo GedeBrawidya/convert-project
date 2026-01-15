@@ -21,7 +21,7 @@ function convertFile (inputPath, outputFormat) {
             tmp_dir,
             inputPath,
         ];
-        const process = spawn('/usr/bin/libreoffice', args);
+        const process = spawn('libreoffice', args);
 
         process.on("close", (code) => {
             if (code === 0) {
