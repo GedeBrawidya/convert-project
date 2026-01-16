@@ -160,3 +160,16 @@ body {
 .delay-100 { animation-delay: 0.1s; }
 .delay-200 { animation-delay: 0.2s; }
 .delay-300 { animation-delay: 0.3s; }
+
+/* Border utilities */
+.border-success {
+  border-color: var(--success) !important;
+}
+
+.border-error {
+  border-color: var(--error) !important;
+}
+
+.rounded-14 {
+  border-radius: 14px;
+}
