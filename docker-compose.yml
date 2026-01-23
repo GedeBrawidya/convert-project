@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  # Next.js application
+  nextjs:
+    build:
+      context: .
+      dockerfile: Dockerfile.nextjs
+    ports:
+      - "3000:3000"
+    environment:
+      - PYTHON_CONVERTER_URL=http://python-converter:8000
+      - NODE_ENV=production
+    depends_on:
+      - python-converter
+    volumes:
+      - ./tmp:/app/tmp
+
+  # Python PDF to DOCX conversion service
+  python-converter:
+    build:
+      context: ./python-converter
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - TMP_DIR=/app/tmp
+    volumes:
+      - ./tmp:/app/tmp
+
+
