@@ -9,9 +9,10 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "child_process": "^1.0.2",
+    "form-data": "^4.0.5",
     "formidable": "^3.5.4",
     "fs": "^0.0.1-security",
+    "http-proxy": "^1.18.1",
     "next": "16.0.3",
     "path": "^0.12.7",
     "react": "19.2.0",
