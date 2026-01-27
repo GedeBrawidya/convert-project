@@ -11,6 +11,7 @@ from typing import Optional
 
 from fastapi import FastAPI, File, UploadFile, HTTPException, Form
 from fastapi.responses import FileResponse
+from pdf2docx import Converter
 
 app = FastAPI(
     title="Document Converter",
@@ -72,32 +73,46 @@ async def convert_document(
         with open(input_path, "wb") as f:
             content = await file.read()
             f.write(content)
-        
-        # Convert using LibreOffice headless
-        # LibreOffice command: libreoffice --headless --convert-to <format> --outdir <dir> <file>
-        args = [
-            "libreoffice",
-            "--headless",
-            "--convert-to",
-            target_format,
-            "--outdir",
-            TMP_DIR,
-            input_path,
-        ]
-        
-        process = subprocess.run(
-            args,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            timeout=300,  # 5 minute timeout
-        )
-        
-        if process.returncode != 0:
-            stderr = process.stderr.decode('utf-8', errors='ignore')
-            raise HTTPException(
-                status_code=500,
-                detail=f"LibreOffice conversion failed: {stderr}"
+
+        input_ext = Path(input_path).suffix.lower()
+
+        # Special case: PDF -> DOCX uses pdf2docx (more reliable than LibreOffice)
+        if input_ext == ".pdf" and target_format == "docx":
+            try:
+                pdf_converter = Converter(input_path)
+                pdf_converter.convert(output_path)
+                pdf_converter.close()
+            except Exception as e:
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"pdf2docx conversion failed: {e}"
+                )
+        else:
+            # Generic conversion using LibreOffice headless
+            # LibreOffice command: libreoffice --headless --convert-to <format> --outdir <dir> <file>
+            args = [
+                "libreoffice",
+                "--headless",
+                "--convert-to",
+                target_format,
+                "--outdir",
+                TMP_DIR,
+                input_path,
+            ]
+
+            process = subprocess.run(
+                args,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                timeout=300,  # 5 minute timeout
             )
+
+            if process.returncode != 0:
+                stderr = process.stderr.decode('utf-8', errors='ignore')
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"LibreOffice conversion failed: {stderr}"
+                )
         
         # LibreOffice outputs file with same basename but target extension
         
