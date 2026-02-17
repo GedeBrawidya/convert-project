@@ -161,4 +161,5 @@ npm run lint
 
 ## License
 
-This project uses [Next.js](https://nextjs.org) and is open source.
+This project uses [Next.js](https://nextjs.org) and is open source. thanks
+
